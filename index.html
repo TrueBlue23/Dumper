@@ -3,31 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BluesHub Deobfuscator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>MoonSec v3 Deobfuscator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #output {
+            white-space: pre-wrap;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border: 1px solid #ccc;
+            overflow: auto;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>BluesHub Deobfuscator</h1>
-    </header>
-    <main>
-        <section>
-            <label for="inputScript"><strong>Input Obfuscated Script:</strong></label>
-            <textarea id="inputScript" placeholder="Paste your obfuscated script here..."></textarea>
-            <button id="deobfuscateBtn">Dump</button>
-        </section>
-        <section>
-            <label for="outputScript"><strong>Deobfuscated Script:</strong></label>
-            <textarea id="outputScript" readonly placeholder="Deobfuscated script will appear here..."></textarea>
-        </section>
-        <section id="disclaimer">
-            <p><strong>Disclaimer:</strong> This tool is for educational purposes only. Please use it responsibly and only on scripts you own or have explicit permission to deobfuscate.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 BluesHub Deobfuscator | Built with ❤️ by TrueBlue23</p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.4/js/lib/beautify.js"></script>
-    <script src="script.js"></script>
+    <h1>MoonSec v3 Deobfuscator</h1>
+    <p>Upload your obfuscated Lua file, and the tool will attempt to reconstruct the original code.</p>
+    <form id="deobfuscatorForm">
+        <input type="file" id="fileInput" accept=".lua">
+        <button type="submit">Deobfuscate</button>
+    </form>
+    <h2>Deobfuscated Output</h2>
+    <div id="output">Your deobfuscated code will appear here...</div>
+    <script>
+        document.getElementById('deobfuscatorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select a file to deobfuscate.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = async function () {
+                const obfuscatedCode = reader.result;
+                const response = await fetch('deobfuscator.js', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: obfuscatedCode })
+                });
+                const result = await response.json();
+                document.getElementById('output').textContent = result.deobfuscatedCode;
+            };
+            reader.readAsText(file);
+        });
+    </script>
 </body>
 </html>
