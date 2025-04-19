@@ -10,16 +10,17 @@
     <div class="container">
         <header>
             <h1>BluesHub Deobfuscator</h1>
-            <p>Effortlessly decode your obfuscated Lua files.</p>
+            <p>Upload or paste your obfuscated Lua code, and get it deobfuscated instantly.</p>
         </header>
         <main>
             <form id="deobfuscatorForm">
-                <textarea id="luaCodeInput" placeholder="Paste your obfuscated Lua code here..." required></textarea>
+                <textarea id="luaCodeInput" placeholder="Paste or upload your obfuscated Lua code here..." required></textarea>
+                <input type="file" id="fileInput" accept=".lua">
                 <button type="submit">Deobfuscate</button>
             </form>
             <div id="outputContainer">
                 <h2>Deobfuscated Code</h2>
-                <pre id="output"></pre>
+                <textarea id="output" readonly></textarea>
             </div>
         </main>
         <footer>
