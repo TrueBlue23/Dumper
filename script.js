@@ -1,96 +1,91 @@
--- MoonSec Deobfuscator
--- DISCLAIMER: For educational purposes only. Use responsibly and only on scripts you own or have permission to modify.
+document.addEventListener("DOMContentLoaded", function () {
+    const inputElement = document.getElementById("inputScript");
+    const outputElement = document.getElementById("outputScript");
+    const deobfuscateButton = document.getElementById("deobfuscateBtn");
 
-local function decodeBase64(encoded)
-    local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-    encoded = string.gsub(encoded, "[^" .. b .. "=]", "")
-    return (encoded:gsub(".", function(x)
-        if x == "=" then return "" end
-        local r, f = "", (b:find(x) - 1)
-        for i = 6, 1, -1 do r = r .. (f % 2 ^ i - f % 2 ^ (i - 1) > 0 and "1" or "0") end
-        return r
-    end):gsub("%d%d%d?%d?%d?%d?%d?%d?", function(x)
-        if #x < 8 then return "" end
-        local c = 0
-        for i = 1, 8 do c = c + (x:sub(i, i) == "1" and 2 ^ (8 - i) or 0) end
-        return string.char(c)
-    end))
-end
+    // Function to decode Base64 strings
+    const decodeBase64 = (encoded) => {
+        try {
+            return atob(encoded);
+        } catch (e) {
+            console.error("Base64 decoding failed:", e);
+            return "[Invalid Base64]";
+        }
+    };
 
-local function decodeHex(hexString)
-    return (hexString:gsub("\\x(%x%x)", function(hex)
-        return string.char(tonumber(hex, 16))
-    end))
-end
+    // Function to decode hex-encoded strings
+    const decodeHex = (hexString) =>
+        hexString.replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 
-local function decodeUnicode(unicodeString)
-    return (unicodeString:gsub("\\u(%x%x%x%x)", function(hex)
-        return string.char(tonumber(hex, 16))
-    end))
-end
+    // Function to decode Unicode-encoded strings
+    const decodeUnicode = (unicodeString) =>
+        unicodeString.replace(/\\u([0-9A-Fa-f]{4})/g, (_, unicode) => String.fromCharCode(parseInt(unicode, 16)));
 
-local function renameVariables(script, variableMap)
-    for obfuscated, readable in pairs(variableMap) do
-        local pattern = "%f[%w_]" .. obfuscated .. "%f[^%w_]"
-        script = script:gsub(pattern, readable)
-    end
-    return script
-end
+    // Function to simplify control flow
+    const simplifyControlFlow = (script) => {
+        // Remove dummy loops
+        script = script.replace(/for\s*\(.*;.*;.*\)\s*{\s*}/g, "");
+        // Remove empty conditionals
+        script = script.replace(/if\s*\(.*\)\s*{\s*}/g, "");
+        // Remove unnecessary "do...end" blocks (if applicable in JavaScript syntax)
+        return script;
+    };
 
-local function simplifyControlFlow(script)
-    -- Remove unnecessary loops
-    script = script:gsub("for %w+ = %d+, %d+ do%s+end", "")
-    -- Remove empty conditionals
-    script = script:gsub("if %b() then%s+end", "")
-    return script
-end
+    // Function to rename obfuscated variables
+    const renameVariables = (script, variableMap) => {
+        for (const [obfuscated, readable] of Object.entries(variableMap)) {
+            const regex = new RegExp(`\\b${obfuscated}\\b`, "g"); // Match exact variable names
+            script = script.replace(regex, readable);
+        }
+        return script;
+    };
 
-local function beautifyScript(script)
-    local indentLevel = 0
-    local formatted = {}
-    for line in script:gmatch("[^\r\n]+") do
-        if line:find("end") then indentLevel = indentLevel - 1 end
-        table.insert(formatted, string.rep("    ", math.max(indentLevel, 0)) .. line)
-        if line:find("function") or line:find("do") or line:find("then") then
-            indentLevel = indentLevel + 1
-        end
-    end
-    return table.concat(formatted, "\n")
-end
+    // Beautify the script for readability
+    const beautifyScript = (script) => {
+        try {
+            return js_beautify(script, { indent_size: 4 }); // Requires js-beautify library
+        } catch (e) {
+            console.warn("Beautification failed:", e);
+            return script;
+        }
+    };
 
-local function deobfuscate(script)
-    -- Step 1: Decode strings
-    script = decodeHex(script)
-    script = decodeUnicode(script)
-    script = script:gsub('base64.decode%((["\'])(.-)%1%)', function(_, encoded)
-        return decodeBase64(encoded)
-    end)
+    // Main deobfuscation function
+    const deobfuscate = (script) => {
+        if (!script.trim()) {
+            alert("Please enter a script to deobfuscate.");
+            return "";
+        }
 
-    -- Step 2: Rename obfuscated variables
-    local variableMap = {
-        ["a1"] = "Player",
-        ["b2"] = "Health",
-        ["c3"] = "Score"
-    }
-    script = renameVariables(script, variableMap)
+        console.log("Original Script:", script);
 
-    -- Step 3: Simplify control flow
-    script = simplifyControlFlow(script)
+        // Step 1: Decode strings
+        script = decodeHex(script);
+        script = decodeUnicode(script);
+        script = script.replace(/atob\(['"]([^'"]+)['"]\)/g, (_, base64) => decodeBase64(base64));
 
-    -- Step 4: Beautify script
-    script = beautifyScript(script)
+        // Step 2: Rename variables
+        const variableMap = {
+            "a1": "player",
+            "b2": "health",
+            "c3": "score",
+        };
+        script = renameVariables(script, variableMap);
 
-    return script
-end
+        // Step 3: Simplify control flow
+        script = simplifyControlFlow(script);
 
--- Example usage
-local obfuscatedScript = [[
-local a1 = base64.decode("Z2FtZS5QbGF5ZXJzLkxvY2FsUGxheWVy") -- Obfuscated Base64 string
-local b2 = "\\x48\\x65\\x61\\x6c\\x74\\x68" -- Hex-encoded string
-local c3 = "\\u0053\\u0063\\u006f\\u0072\\u0065" -- Unicode-encoded string
-for i = 1, 10 do end -- Dummy loop
-if true then end -- Dummy conditional
-]]
+        // Step 4: Beautify the script
+        script = beautifyScript(script);
 
-local deobfuscatedScript = deobfuscate(obfuscatedScript)
-print("Deobfuscated Script:\n", deobfuscatedScript)
+        console.log("Deobfuscated Script:", script);
+        return script;
+    };
+
+    // Attach the deobfuscation logic to the button
+    deobfuscateButton.addEventListener("click", function () {
+        const inputScript = inputElement.value;
+        const outputScript = deobfuscate(inputScript);
+        outputElement.value = outputScript;
+    });
+});
