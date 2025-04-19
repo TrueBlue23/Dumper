@@ -1,52 +1,58 @@
-const luamin = require('./luamin.js');
-const fs = require('fs');
-
-const started_time = Date.now();
-console.log('Beautifying script...')
-luamin.beautify();
-
-const output = fs.readFileSync(__dirname + '\\output.lua', 'utf8');
-
-const matches = (output.match(
-/(.+)\[(.+)\[(.+)\]\] = (.+)\[(.+)\[(.+)\]\];$/gm
-))
-
-if (matches) {
-    try {
-        let output = fs.writeFileSync(__dirname + '\\moonsec_v3_output.txt', '');
-        fs.appendFileSync(__dirname + '\\moonsec_v3_output.txt', '[BYFRON] - Moonsec V3 Dumper @ https://discord.gg/SXQvSGme7F \n\n');
-        for (index = 0; index < matches.length; index++) {
-            if (matches[index].match(/[\+\/\-\%\*\#]/gm)) {
-                matches.splice(index, index);
-            };
-        };
-        for (index = 0; index < matches.length; index++) {
-            console.log(`[${index}]: ${matches[index]}`);
-            fs.appendFileSync(__dirname + '\\moonsec_v3_output.txt', `[${index}]: ${matches[index]}\n`);
+const decodeStrings = (code) => {
+    // Example: Decode Base64 strings
+    return code.replace(/string\.decode\("([^"]+)"\)/g, (_, encoded) => {
+        try {
+            const decoded = atob(encoded);
+            return `"${decoded}"`;
+        } catch {
+            return `"${encoded}"`; // If decoding fails, return the original string
         }
-        const ended_time = Date.now();
-        console.log(`Found ${matches.length}!`);
-        const final_time = ended_time - started_time;
+    });
+};
 
-        console.log('Elapsed time: ' + final_time / 1000 + " seconds");
-        console.log('Wrote every match to a file!');
+const recoverControlFlow = (code) => {
+    // Example: Flatten jumps and loops
+    // Implement specific control flow recovery patterns here
+    return code; // Stub: Return code as-is for now
+};
 
-        console.log('Adding prints to the beautified file and minifying it...');
-        let beautified_output = fs.readFileSync(__dirname + '\\output.lua', 'utf8');
+const renameVariables = (code) => {
+    // Example: Rename obfuscated variables
+    const variableMap = {};
+    let varCount = 0;
+    return code.replace(/\bvar_\d+\b/g, (match) => {
+        if (!variableMap[match]) {
+            variableMap[match] = `var_${++varCount}`;
+        }
+        return variableMap[match];
+    });
+};
 
-        for (index = 0; index < matches.length; index++) {
-            beautified_output = beautified_output.replace(matches[index], matches[index] + ` print(${(function(thematch){
-                thematch = thematch.replace(/(.+)\[(.+)\[(.+)\]\] =/, "");
-                thematch = thematch.replace(/;/, "");
-                thematch = thematch.replace(/\[.+\]/, "");
-                console.log(thematch);
-                return thematch
-            })(matches[index])})`)
-        };
-        beautified_output = luamin.minify(true, beautified_output);
-        fs.writeFileSync(__dirname + '\\output.lua', beautified_output)
+const eliminateDeadCode = (code) => {
+    // Example: Remove dead code sections
+    return code.replace(/-- Dead code start --[\s\S]*?-- Dead code end --/g, '');
+};
+
+const beautifyCode = (code) => {
+    // Example: Format Lua code (basic example)
+    return code.replace(/;/g, ';\n').replace(/\{/g, '{\n').replace(/\}/g, '\n}');
+};
+
+self.addEventListener('fetch', (event) => {
+    if (event.request.method === 'POST') {
+        event.respondWith(
+            event.request.json().then((data) => {
+                let deobfuscatedCode = data.code;
+                deobfuscatedCode = decodeStrings(deobfuscatedCode);
+                deobfuscatedCode = recoverControlFlow(deobfuscatedCode);
+                deobfuscatedCode = renameVariables(deobfuscatedCode);
+                deobfuscatedCode = eliminateDeadCode(deobfuscatedCode);
+                deobfuscatedCode = beautifyCode(deobfuscatedCode);
+
+                return new Response(JSON.stringify({ deobfuscatedCode }), {
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            })
+        );
     }
-    catch (err) {
-        console.log(`[!] - Lua-Dumper had a error! ${err}`);
-    }
-}
+});
