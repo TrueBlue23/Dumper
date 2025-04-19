@@ -3,44 +3,56 @@ document.addEventListener("DOMContentLoaded", function () {
     const outputElement = document.getElementById("outputScript");
     const deobfuscateButton = document.getElementById("deobfuscateBtn");
 
-    // Function to decode Base64 strings
+    // Create a loading animation
+    const showLoading = () => {
+        outputElement.value = "Deobfuscating";
+        let dots = 0;
+        const interval = setInterval(() => {
+            dots = (dots + 1) % 4; // Cycle through 0, 1, 2, 3
+            outputElement.value = "Deobfuscating" + ".".repeat(dots);
+        }, 500);
+
+        // Return a function to stop the loading animation
+        return () => clearInterval(interval);
+    };
+
+    // Decode Base64 strings
     const decodeBase64 = (encoded) => {
         try {
             return atob(encoded);
         } catch (e) {
-            console.error("Base64 decoding failed:", e);
-            return "[Invalid Base64]";
+            console.warn("Base64 decoding failed:", e);
+            return null; // Return null on failure
         }
     };
 
-    // Function to decode hex-encoded strings
+    // Decode hex-encoded strings
     const decodeHex = (hexString) =>
         hexString.replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 
-    // Function to decode Unicode-encoded strings
+    // Decode Unicode-encoded strings
     const decodeUnicode = (unicodeString) =>
         unicodeString.replace(/\\u([0-9A-Fa-f]{4})/g, (_, unicode) => String.fromCharCode(parseInt(unicode, 16)));
 
-    // Function to simplify control flow
+    // Simplify control flow
     const simplifyControlFlow = (script) => {
-        // Remove dummy loops
-        script = script.replace(/for\s*\(.*;.*;.*\)\s*{\s*}/g, "");
+        // Remove unnecessary loops
+        script = script.replace(/for\s*\w+\s*=\s*\d+,\s*\d+\s*do\s*end/g, "");
         // Remove empty conditionals
-        script = script.replace(/if\s*\(.*\)\s*{\s*}/g, "");
-        // Remove unnecessary "do...end" blocks (if applicable in JavaScript syntax)
+        script = script.replace(/if\s*\(.*?\)\s*then\s*end/g, "");
         return script;
     };
 
-    // Function to rename obfuscated variables
+    // Rename obfuscated variables
     const renameVariables = (script, variableMap) => {
         for (const [obfuscated, readable] of Object.entries(variableMap)) {
-            const regex = new RegExp(`\\b${obfuscated}\\b`, "g"); // Match exact variable names
+            const regex = new RegExp(`\\b${obfuscated}\\b`, "g"); // Exact match for variable
             script = script.replace(regex, readable);
         }
         return script;
     };
 
-    // Beautify the script for readability
+    // Beautify the script
     const beautifyScript = (script) => {
         try {
             return js_beautify(script, { indent_size: 4 }); // Requires js-beautify library
@@ -52,40 +64,63 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Main deobfuscation function
     const deobfuscate = (script) => {
-        if (!script.trim()) {
-            alert("Please enter a script to deobfuscate.");
-            return "";
+        try {
+            // Step 1: Decode strings
+            script = decodeHex(script);
+            script = decodeUnicode(script);
+            script = script.replace(/atob\(['"]([^'"]+)['"]\)/g, (_, base64) => {
+                const decoded = decodeBase64(base64);
+                if (decoded === null) throw new Error("Base64 decoding failed");
+                return decoded;
+            });
+
+            // Step 2: Simplify control flow
+            script = simplifyControlFlow(script);
+
+            // Step 3: Rename variables
+            const variableMap = {
+                "a1": "player",
+                "b2": "health",
+                "c3": "score",
+            };
+            script = renameVariables(script, variableMap);
+
+            // Step 4: Beautify the script
+            script = beautifyScript(script);
+
+            return script;
+        } catch (error) {
+            console.error("Deobfuscation failed:", error);
+            return null; // Return null if any error occurs
         }
-
-        console.log("Original Script:", script);
-
-        // Step 1: Decode strings
-        script = decodeHex(script);
-        script = decodeUnicode(script);
-        script = script.replace(/atob\(['"]([^'"]+)['"]\)/g, (_, base64) => decodeBase64(base64));
-
-        // Step 2: Rename variables
-        const variableMap = {
-            "a1": "player",
-            "b2": "health",
-            "c3": "score",
-        };
-        script = renameVariables(script, variableMap);
-
-        // Step 3: Simplify control flow
-        script = simplifyControlFlow(script);
-
-        // Step 4: Beautify the script
-        script = beautifyScript(script);
-
-        console.log("Deobfuscated Script:", script);
-        return script;
     };
 
-    // Attach the deobfuscation logic to the button
+    // Attach the deobfuscation process to the button click
     deobfuscateButton.addEventListener("click", function () {
         const inputScript = inputElement.value;
-        const outputScript = deobfuscate(inputScript);
-        outputElement.value = outputScript;
+
+        if (!inputScript.trim()) {
+            alert("Please enter a script to deobfuscate.");
+            return;
+        }
+
+        // Show loading animation
+        const stopLoading = showLoading();
+
+        setTimeout(() => {
+            // Perform deobfuscation
+            const outputScript = deobfuscate(inputScript);
+
+            // Stop loading animation
+            stopLoading();
+
+            if (outputScript === null) {
+                // Deobfuscation failed
+                outputElement.value = "Failed dumping";
+            } else {
+                // Deobfuscation succeeded
+                outputElement.value = outputScript;
+            }
+        }, 1000); // Simulate processing delay
     });
 });
