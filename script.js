@@ -1,13 +1,44 @@
-function deobfuscate(code) {
-    try {
-        // Use eval to dynamically interpret the obfuscated code in a controlled environment
-        // WARNING: Be cautious with eval and ensure you trust the input!
-        let readableCode = eval(code);
-        console.log("Readable Code:", readableCode);
-    } catch (error) {
-        console.error("Error deobfuscating:", error);
-    }
-}
+document.getElementById("deobfuscatorForm").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-let obfuscatedCode = '...'; // Replace this with your obfuscated code
-deobfuscate(obfuscatedCode);
+    const inputCode = document.getElementById("luaCodeInput").value;
+    const outputElement = document.getElementById("output");
+
+    if (!inputCode.trim()) {
+        outputElement.textContent = "Error: No code provided.";
+        return;
+    }
+
+    try {
+        const deobfuscatedCode = deobfuscateLua(inputCode);
+        outputElement.textContent = deobfuscatedCode || "Error: Unable to deobfuscate the code.";
+    } catch (error) {
+        outputElement.textContent = `Error during deobfuscation: ${error.message}`;
+    }
+});
+
+function deobfuscateLua(code) {
+    // Decode strings
+    code = code.replace(/string\.decode\("(.+?)"\)/g, (_, encoded) => {
+        try {
+            const decoded = atob(encoded); // Base64 decode example
+            return `"${decoded}"`;
+        } catch {
+            return `"${encoded}"`; // Return as-is if decoding fails
+        }
+    });
+
+    // Decode numbers
+    code = code.replace(/number\.decode\((\d+)\)/g, (_, encodedNumber) => {
+        try {
+            return parseInt(encodedNumber, 10); // Replace with actual decoding logic
+        } catch {
+            return encodedNumber; // Return as-is if decoding fails
+        }
+    });
+
+    // Beautify the code (basic example)
+    code = code.replace(/;/g, ";\n").replace(/\{/g, "{\n").replace(/\}/g, "\n}");
+
+    return code;
+}
