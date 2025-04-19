@@ -1,46 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JS Deobfuscator</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    textarea { width: 100%; height: 200px; margin-bottom: 10px; font-family: monospace; }
-    button { padding: 10px; font-size: 16px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BluesHub Deobfuscator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>JavaScript Deobfuscator</h2>
-  <textarea id="input" placeholder="Paste obfuscated JavaScript here..."></textarea>
-  <button onclick="deobfuscate()">Deobfuscate</button>
-  <textarea id="output" placeholder="Deobfuscated JavaScript will appear here..."></textarea>
-
-  <script>
-    function decodeBase64Strings(code) {
-      return code.replace(/atob\(['"]([^'"]+)['"]\)/g, (_, encoded) => {
-        try {
-          return `"${atob(encoded)}"`;
-        } catch {
-          return `"${encoded}"`;
-        }
-      });
-    }
-
-    function deobfuscate() {
-      let code = document.getElementById('input').value;
-
-      // Decode base64 strings
-      code = decodeBase64Strings(code);
-
-      // Remove eval calls
-      code = code.replace(/eval\((.*?)\);?/g, '// removed eval: $1');
-
-      // Beautify using js-beautify
-      const beautified = js_beautify(code);
-
-      document.getElementById('output').value = beautified;
-    }
-  </script>
+    <div class="container">
+        <header>
+            <h1>BluesHub Deobfuscator</h1>
+            <p>Effortlessly decode your obfuscated Lua files.</p>
+        </header>
+        <main>
+            <form id="deobfuscatorForm">
+                <textarea id="luaCodeInput" placeholder="Paste your obfuscated Lua code here..." required></textarea>
+                <button type="submit">Deobfuscate</button>
+            </form>
+            <div id="outputContainer">
+                <h2>Deobfuscated Code</h2>
+                <pre id="output"></pre>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2025 BluesHub | All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="deobfuscator.js"></script>
 </body>
 </html>
