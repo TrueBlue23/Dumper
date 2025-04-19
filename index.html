@@ -1,135 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webhook Protector</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            color: #1a202c;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2b6cb0;
-            margin-bottom: 8px;
-        }
-
-        p {
-            font-size: 16px;
-            color: #4a5568;
-            margin-bottom: 24px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 16px;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        input:focus {
-            border-color: #2b6cb0;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #2b6cb0;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: #2c5282;
-        }
-
-        #response {
-            margin-top: 16px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .success {
-            color: #2f855a;
-        }
-
-        .error {
-            color: #e53e3e;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>JS Deobfuscator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    textarea { width: 100%; height: 200px; margin-bottom: 10px; font-family: monospace; }
+    button { padding: 10px; font-size: 16px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Webhook Protector</h1>
-        <p>Enter your Discord webhook URL to protect it.</p>
-        <form id="webhookForm">
-            <input type="url" id="webhookUrl" placeholder="Enter your webhook URL" required>
-            <button type="submit">Protect Webhook</button>
-        </form>
-        <div id="response"></div>
-    </div>
-    <script>
-        const form = document.getElementById('webhookForm');
-        const responseDiv = document.getElementById('response');
+  <h2>JavaScript Deobfuscator</h2>
+  <textarea id="input" placeholder="Paste obfuscated JavaScript here..."></textarea>
+  <button onclick="deobfuscate()">Deobfuscate</button>
+  <textarea id="output" placeholder="Deobfuscated JavaScript will appear here..."></textarea>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const webhookUrl = document.getElementById('webhookUrl').value;
+  <script>
+    function decodeBase64Strings(code) {
+      return code.replace(/atob\(['"]([^'"]+)['"]\)/g, (_, encoded) => {
+        try {
+          return `"${atob(encoded)}"`;
+        } catch {
+          return `"${encoded}"`;
+        }
+      });
+    }
 
-            try {
-                const response = await fetch('https://your-backend-service.com/protect-webhook', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ webhookUrl })
-                });
+    function deobfuscate() {
+      let code = document.getElementById('input').value;
 
-                const result = await response.json();
-                if (response.ok) {
-                    responseDiv.textContent = result.message;
-                    responseDiv.className = "success";
-                } else {
-                    responseDiv.textContent = result.message || "Something went wrong.";
-                    responseDiv.className = "error";
-                }
-            } catch (error) {
-                responseDiv.textContent = "Error connecting to the server.";
-                responseDiv.className = "error";
-            }
-        });
-    </script>
+      // Decode base64 strings
+      code = decodeBase64Strings(code);
+
+      // Remove eval calls
+      code = code.replace(/eval\((.*?)\);?/g, '// removed eval: $1');
+
+      // Beautify using js-beautify
+      const beautified = js_beautify(code);
+
+      document.getElementById('output').value = beautified;
+    }
+  </script>
 </body>
 </html>
