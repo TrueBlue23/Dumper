@@ -14,13 +14,14 @@
         </header>
         <main>
             <form id="deobfuscatorForm">
+                <label for="luaCodeInput">Obfuscated Code:</label>
                 <textarea id="luaCodeInput" placeholder="Paste or upload your obfuscated Lua code here..." required></textarea>
                 <input type="file" id="fileInput" accept=".lua">
                 <button type="submit">Deobfuscate</button>
             </form>
             <div id="outputContainer">
-                <h2>Deobfuscated Code</h2>
-                <textarea id="output" readonly></textarea>
+                <label for="output">Deobfuscated Code:</label>
+                <textarea id="output" placeholder="The deobfuscated Lua code will appear here..." readonly></textarea>
             </div>
         </main>
         <footer>
