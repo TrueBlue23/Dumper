@@ -5,16 +5,27 @@ document.getElementById("deobfuscatorForm").addEventListener("submit", function 
     const outputElement = document.getElementById("output");
 
     if (!inputCode.trim()) {
-        outputElement.textContent = "Error: No code provided.";
+        outputElement.value = "Error: No code provided.";
         return;
     }
 
     try {
         const deobfuscatedCode = deobfuscateLua(inputCode);
-        outputElement.textContent = deobfuscatedCode || "Error: Unable to deobfuscate the code.";
+        outputElement.value = deobfuscatedCode || "Error: Unable to deobfuscate the code.";
     } catch (error) {
-        outputElement.textContent = `Error during deobfuscation: ${error.message}`;
+        outputElement.value = `Error during deobfuscation: ${error.message}`;
     }
+});
+
+document.getElementById("fileInput").addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+        document.getElementById("luaCodeInput").value = reader.result;
+    };
+    reader.readAsText(file);
 });
 
 function deobfuscateLua(code) {
