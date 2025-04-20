@@ -1,53 +1,86 @@
-document.getElementById("deobfuscatorForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const inputCode = document.getElementById("luaCodeInput").value;
-    const outputElement = document.getElementById("output");
-
-    if (!inputCode.trim()) {
-        outputElement.value = "Error: No code provided.";
-        return;
+// Define the old unpack and appendfile functions
+const oldUnpack = (...args) => args;
+const oldAppendFile = (filename, content) => {
+    const fs = require('fs');
+    if (!fs.existsSync(filename)) {
+        fs.writeFileSync(filename, content, { flag: 'a' });
     }
+};
 
-    try {
-        const deobfuscatedCode = deobfuscateLua(inputCode);
-        outputElement.value = deobfuscatedCode || "Error: Unable to deobfuscate the code.";
-    } catch (error) {
-        outputElement.value = `Error during deobfuscation: ${error.message}`;
+// Define the output file and credits
+const output = 'yes.txt';
+
+const Credits = `
+          _____                   _______                   _____           _______                   _____                    _____                    _____          
+         /\\    \\                 /::\\    \\                 /\\    \\         /::\\    \\                 /\\    \\                  /\\    \\                  /\\    \\         
+        /::\\    \\               /::::\\    \\               /::\\____\\       /::::\\    \\               /::\\    \\                /::\\    \\                /::\\____\\        
+       /::::\\    \\             /::::::\\    \\             /:::/    /      /::::::\\    \\             /::::\\    \\              /::::\\    \\              /:::/    /        
+      /::::::\\    \\           /::::::::\\    \\           /:::/    /      /::::::::\\    \\           /::::::\\    \\            /::::::\\    \\            /:::/    /         
+     /:::/\\:::\\    \\         /:::/~~\\:::\\    \\         /:::/    /      /:::/~~\\:::\\    \\         /:::/\\:::\\    \\          /:::/\\:::\\    \\          /:::/    /          
+    /:::/__\\:::\\    \\       /:::/    \\:::\\    \\       /:::/    /      /:::/    \\:::\\    \\       /:::/  \\:::\\    \\        /:::/__\\:::\\    \\        /:::/____/           
+    \\:::\\   \\:::\\    \\     /:::/    / \\:::\\    \\     /:::/    /      /:::/    / \\:::\\    \\     /:::/    \\:::\\    \\      /::::\\   \\:::\\    \\       |::|    |            
+  ___\\:::\\   \\:::\\    \\   /:::/____/   \\:::\\____\\   /:::/    /      /:::/____/   \\:::\\____\\   /:::/    / \\:::\\    \\    /::::::\\   \\:::\\    \\      |::|    |     _____  
+ /\\   \\:::\\   \\:::\\    \\ |:::|    |     |:::|    | /:::/    /      |:::|    |     |:::|    | /:::/    /   \\:::\\ ___\\  /:::/\\:::\\   \\:::\\    \\     |::|    |    /\\    \\ 
+/::\\   \\:::\\   \\:::\\____\\|:::|____|     |:::|    |/:::/____/       |:::|____|     |:::|    |/:::/____/     \\:::|    |/:::/__\\:::\\   \\:::\\____\\    |::|    |   /::\\____\\
+\\:::\\   \\:::\\   \\::/    / \\:::\\    \\   /:::/    / \\:::\\    \\        \\:::\\    \\   /:::/    / \\:::\\    \\     /:::|____|\\:::\\   \\:::\\   \\::/    /    |::|    |  /:::/    /
+ \\:::\\   \\:::\\   \\/____/   \\:::\\    \\ /:::/    /   \\:::\\    \\        \\:::\\    \\ /:::/    /   \\:::\\    \\   /:::/    /  \\:::\\   \\:::\\   \\/____/     |::|    | /:::/    / 
+  \\:::\\   \\:::\\    \\        \\:::\\    /:::/    /     \\:::\\    \\        \\:::\\    /:::/    /     \\:::\\    \\ /:::/    /    \\:::\\   \\:::\\    \\         |::|____|/:::/    /  
+   \\:::\\   \\:::\\____\\        \\:::\\__/:::/    /       \\:::\\    \\        \\:::\\__/:::/    /       \\:::\\    /:::/    /      \\:::\\   \\:::\\____\\        |:::::::::::/    /   
+    \\:::\\  /:::/    /         \\::::::::/    /         \\:::\\    \\        \\::::::::/    /         \\:::\\  /:::/    /        \\:::\\   \\::/    /        \\::::::::::/____/    
+     \\:::\\/:::/    /           \\::::::/    /           \\:::\\    \\        \\::::::/    /           \\:::\\/:::/    /          \\:::\\   \\/____/          ~~~~~~~~~~          
+      \\::::::/    /             \\::::/    /             \\:::\\    \\        \\::::/    /             \\::::::/    /            \\:::\\    \\                                  
+       \\::::/    /               \\::/____/               \\:::\\____\\        \\::/____/               \\::::/    /              \\:::\\____\\                                 
+        \\::/    /                 ~~                      \\::/    /         ~~                      \\::/____/                \\::/    /                                 
+         \\/____/                                           \\/____/                                   ~~                       \\/____/                                  
+                                                                                                                                           
+                                                                     Moonsec V3 Dumper made by Solodev
+`;
+
+// Append content to a file
+const appendFile = (filename, content) => {
+    const fs = require('fs');
+    if (!fs.existsSync(filename)) {
+        fs.writeFileSync(filename, `${Credits}\n${content}`);
     }
-});
+    return oldAppendFile(filename, content);
+};
 
-function deobfuscateLua(code) {
-    // Decode strings
-    code = code.replace(/string\.decode\("(.+?)"\)/g, (_, encoded) => {
-        try {
-            const decoded = atob(encoded); // Base64 decode example
-            return `"${decoded}"`;
-        } catch {
-            return `"${encoded}"`; // Return as-is if decoding fails
+// Format a table (array or object)
+const format = (tab) => {
+    let result = '{';
+    for (const [index, value] of Object.entries(tab)) {
+        if (typeof value === 'object' && value !== null) {
+            result += format(value);
+        } else {
+            result += `\n'Index: ${index}' | 'Value: ${value}', `;
         }
-    });
+    }
+    result = result.slice(0, -2) + '\n},\n';
+    return result;
+};
 
-    // Decode numbers
-    code = code.replace(/number\.decode\((\d+)\)/g, (_, encodedNumber) => {
-        try {
-            // Example decoding logic: reverse digits (replace this logic with actual decoding as needed)
-            const decoded = encodedNumber.split("").reverse().join("");
-            return parseInt(decoded, 10);
-        } catch {
-            return encodedNumber; // Return as-is if decoding fails
+// Iterate through a table
+const foreach = (tab) => {
+    if (typeof tab === 'object' && tab !== null) {
+        for (const [index, value] of Object.entries(tab)) {
+            if (typeof value === 'object' && value !== null) {
+                appendFile(output, format(value) + '\n');
+            } else {
+                appendFile(output, `{Index: ${index} | Value: ${value}\n`);
+            }
         }
-    });
+    }
+};
 
-    // Remove obfuscation patterns (example)
-    code = code.replace(/obfuscation\["(.+?)"\]/g, (_, key) => key);
+// Override the unpack function
+const unpack = (...args) => {
+    const result = oldUnpack(...args);
+    if (typeof result === 'object' && result !== null) {
+        foreach(result);
+    }
+    return result;
+};
 
-    // Beautify the code (improved formatting)
-    code = code
-        .replace(/;/g, ";\n")
-        .replace(/\{/g, "{\n")
-        .replace(/\}/g, "\n}")
-        .replace(/\n\s*\n/g, "\n"); // Remove extra blank lines
-
-    return code.trim();
-}
+// Example usage
+const exampleData = { a: 1, b: { c: 2, d: 3 } };
+unpack(exampleData);
