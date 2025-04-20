@@ -17,17 +17,6 @@ document.getElementById("deobfuscatorForm").addEventListener("submit", function 
     }
 });
 
-document.getElementById("fileInput").addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function () {
-        document.getElementById("luaCodeInput").value = reader.result;
-    };
-    reader.readAsText(file);
-});
-
 function deobfuscateLua(code) {
     // Decode strings
     code = code.replace(/string\.decode\("(.+?)"\)/g, (_, encoded) => {
@@ -42,14 +31,20 @@ function deobfuscateLua(code) {
     // Decode numbers
     code = code.replace(/number\.decode\((\d+)\)/g, (_, encodedNumber) => {
         try {
-            return parseInt(encodedNumber, 10); // Replace with actual decoding logic
+            // Example decoding logic: reverse the digits
+            const decoded = encodedNumber.split("").reverse().join("");
+            return parseInt(decoded, 10);
         } catch {
             return encodedNumber; // Return as-is if decoding fails
         }
     });
 
-    // Beautify the code (basic example)
-    code = code.replace(/;/g, ";\n").replace(/\{/g, "{\n").replace(/\}/g, "\n}");
+    // Beautify the code (improved formatting)
+    code = code
+        .replace(/;/g, ";\n")
+        .replace(/\{/g, "{\n")
+        .replace(/\}/g, "\n}")
+        .replace(/\n\s*\n/g, "\n"); // Remove extra blank lines
 
-    return code;
+    return code.trim();
 }
