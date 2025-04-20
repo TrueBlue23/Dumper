@@ -1,33 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BluesHub Deobfuscator</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BluesHub Deobfuscator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #loading-buttons {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .loading-button {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      background-color: #007bff;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .loading-button:nth-child(2) {
+      animation-delay: -0.4s;
+    }
+
+    .loading-button:nth-child(3) {
+      animation-delay: -0.8s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      overflow-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>BluesHub Deobfuscator</h1>
-            <p>Upload or paste your obfuscated Lua code, and get it deobfuscated instantly.</p>
-        </header>
-        <main>
-            <form id="deobfuscatorForm">
-                <label for="luaCodeInput">Obfuscated Code:</label>
-                <textarea id="luaCodeInput" placeholder="Paste or upload your obfuscated Lua code here..." required></textarea>
-                <input type="file" id="fileInput" accept=".lua">
-                <button type="submit">Deobfuscate</button>
-            </form>
-            <div id="outputContainer">
-                <label for="output">Deobfuscated Code:</label>
-                <textarea id="output" placeholder="The deobfuscated Lua code will appear here..." readonly></textarea>
-            </div>
-        </main>
-        <footer>
-            <p>&copy; 2025 BluesHub | All rights reserved.</p>
-        </footer>
-    </div>
-    <script src="deobfuscator.js"></script>
+  <h1>Lua Deobfuscator</h1>
+  <button id="deobfuscate-btn">Deobfuscate</button>
+
+  <div id="loading-buttons">
+    <div class="loading-button"></div>
+    <div class="loading-button"></div>
+    <div class="loading-button"></div>
+  </div>
+
+  <div id="output"></div>
+
+  <script src="script.js"></script>
 </body>
 </html>
