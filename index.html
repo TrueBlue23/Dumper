@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BluesHub Deobfuscator</title>
+  <title>BluesHub Dumper</title>
+  <script src="https://unpkg.com/@fengari/web/dist/fengari-web.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,6 +56,8 @@
 </head>
 <body>
   <h1>Lua Deobfuscator</h1>
+  <textarea id="lua-input" placeholder="Paste your Lua script here" rows="10" cols="50"></textarea>
+  <br>
   <button id="deobfuscate-btn">Deobfuscate</button>
 
   <div id="loading-buttons">
