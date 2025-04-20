@@ -31,13 +31,16 @@ function deobfuscateLua(code) {
     // Decode numbers
     code = code.replace(/number\.decode\((\d+)\)/g, (_, encodedNumber) => {
         try {
-            // Example decoding logic: reverse the digits
+            // Example decoding logic: reverse digits (replace this logic with actual decoding as needed)
             const decoded = encodedNumber.split("").reverse().join("");
             return parseInt(decoded, 10);
         } catch {
             return encodedNumber; // Return as-is if decoding fails
         }
     });
+
+    // Remove obfuscation patterns (example)
+    code = code.replace(/obfuscation\["(.+?)"\]/g, (_, key) => key);
 
     // Beautify the code (improved formatting)
     code = code
