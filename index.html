@@ -3,79 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BluesHub Obfuscator</title>
+    <title>Code Deobfuscator</title>
     <style>
         body {
-            background-color: #1e3a8a; /* Blue theme */
-            color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
+            margin: 20px;
+            line-height: 1.6;
         }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        form {
-            background-color: #2563eb; /* Lighter Blue */
-            padding: 20px;
-            border-radius: 8px;
-            display: inline-block;
-        }
-        input[type="file"] {
-            margin: 10px 0;
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            font-family: monospace;
         }
         button {
-            background-color: #1e40af;
+            padding: 10px 20px;
+            background-color: #007BFF;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
-            background-color: #1c3aa9;
+            background-color: #0056b3;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
-    <h1>BluesHub Obfuscator</h1>
-    <form id="obfuscationForm" enctype="multipart/form-data">
-        <input type="file" id="codeFile" name="codeFile" accept=".js" required>
-        <br>
-        <button type="submit">Obfuscate</button>
-    </form>
-    <div id="result"></div>
+    <h1>JavaScript Code Deobfuscator</h1>
+    <p>Paste your obfuscated Lua or JavaScript code below and click "Deobfuscate".</p>
+    <textarea id="obfuscatedCode" placeholder="Paste obfuscated code here..."></textarea>
+    <br>
+    <button onclick="deobfuscateCode()">Deobfuscate</button>
+    <h2>Deobfuscated Code</h2>
+    <pre id="result">The deobfuscated code will appear here...</pre>
     <script>
-        const form = document.getElementById("obfuscationForm");
-        const resultDiv = document.getElementById("result");
+        function deobfuscateCode() {
+            const obfuscatedCode = document.getElementById('obfuscatedCode').value;
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const fileInput = document.getElementById("codeFile");
-            if (!fileInput.files.length) {
-                alert("Please select a file.");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append("codeFile", fileInput.files[0]);
-
+            // Basic deobfuscation example - Replace this with your logic
+            let deobfuscatedCode = obfuscatedCode;
             try {
-                const response = await fetch("/obfuscate", {
-                    method: "POST",
-                    body: formData,
-                });
-                const data = await response.json();
-                if (data.success) {
-                    resultDiv.innerHTML = `<p>Obfuscation Successful! Download your file: <a href="${data.downloadUrl}" target="_blank">Download Obfuscated Code</a></p>`;
-                } else {
-                    resultDiv.innerHTML = `<p>Error: ${data.message}</p>`;
-                }
+                // Example: Replace all 'local' with 'var' (for Lua) or simple substitutions
+                deobfuscatedCode = deobfuscatedCode
+                    .replace(/\blocal\b/g, 'var') // Replace Lua's 'local' keyword
+                    .replace(/\bfunction\b/g, 'function') // Example edit
+                    .replace(/,\s?O\.char/g, ', String.fromCharCode') // Replace char references
+                    .replace(/O\.byte/g, 'String.charCodeAt'); // Replace byte references
+
+                // Additional deobfuscation logic can go here
             } catch (error) {
-                resultDiv.innerHTML = `<p>Error processing your request. Try again later.</p>`;
+                deobfuscatedCode = `Error during deobfuscation: ${error.message}`;
             }
-        });
+
+            // Output the result
+            document.getElementById('result').textContent = deobfuscatedCode || 'No code provided to deobfuscate.';
+        }
     </script>
 </body>
 </html>
