@@ -1,6 +1,6 @@
 function deobfuscateCode() {
     const premiumKey = prompt('Please enter your premium key to proceed:');
-    const validPremiumKey = 'YOUR_PREMIUM_KEY'; // Replace with your actual premium key
+    const validPremiumKey = '1022011'; // Replace with your actual premium key
 
     if (premiumKey !== validPremiumKey) {
         alert('Invalid premium key. Access denied.');
