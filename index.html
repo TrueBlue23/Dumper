@@ -16,21 +16,10 @@
         .form-area button:hover { background-color: #358ac9; }
         .output-area { margin-top: 20px; }
         .output-area div { background-color: #1c324e; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-family: monospace; color: #cce7ff; max-height: 300px; overflow-y: auto; }
-        .loading-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1e3a5f; z-index: 9999; justify-content: center; align-items: center; color: #ffffff; text-align: center; }
-        .loading-screen.active { display: flex; }
-        .loading-bar { width: 80%; height: 20px; background-color: #4bb3fd; border-radius: 10px; overflow: hidden; margin-top: 20px; }
-        .loading-progress { width: 0%; height: 100%; background-color: #358ac9; transition: width 0.5s; }
+        footer { text-align: center; padding: 10px; background-color: #0d253f; color: #4bb3fd; }
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div>
-            <h1>Loading Blueshub Obfuscator...</h1>
-            <div class="loading-bar">
-                <div class="loading-progress" id="loadingProgress"></div>
-            </div>
-        </div>
-    </div>
     <header>
         <h1>(Blueshub Obfuscator)</h1>
     </header>
@@ -40,8 +29,8 @@
         <div class="form-area">
             <input type="file" id="fileInput" accept=".lua,.js,.html,.txt">
             <br>
-            <button onclick="startLoading(obfuscateCode)">Obfuscate</button>
-            <button onclick="startLoading(deobfuscateCode)">Deobfuscate</button>
+            <button onclick="obfuscateCode()">Obfuscate</button>
+            <button onclick="deobfuscateCode()">Deobfuscate</button>
         </div>
         <div class="output-area">
             <h3>Obfuscated Code:</h3>
@@ -54,24 +43,7 @@
         &copy; 2025 Blueshub Obfuscator. All rights reserved.
     </footer>
     <script>
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingProgress = document.getElementById('loadingProgress');
-
-        function startLoading(callback) {
-            loadingScreen.classList.add('active');
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                loadingProgress.style.width = progress + '%';
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    loadingScreen.classList.remove('active');
-                    callback();
-                }
-            }, 300);
-        }
-
-        let obfuscationMap = {};
+        let obfuscationMap = {}; // Track original and obfuscated variable names
 
         function generateRandomString(length) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -82,6 +54,39 @@
             return result;
         }
 
+        function obfuscateLua(code) {
+            return code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
+                if (!obfuscationMap[match]) {
+                    obfuscationMap[match] = generateRandomString(8);
+                }
+                return obfuscationMap[match];
+            });
+        }
+
+        function obfuscateJavaScript(code) {
+            const varRegex = /\b(var|let|const|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g;
+            const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+
+            return code.replace(varRegex, (match, type, name) => {
+                if (!obfuscationMap[name]) {
+                    obfuscationMap[name] = generateRandomString(8);
+                }
+                return `${type} ${obfuscationMap[name]}`;
+            }).replace(stringRegex, () => `"${generateRandomString(16)}"`);
+        }
+
+        function obfuscateHTML(code) {
+            return code.replace(/<([a-zA-Z]+)([^>]*)>/g, (match, tag, attrs) => {
+                const obfuscatedAttrs = attrs.replace(/\b([a-zA-Z-]+)\b/g, (attr) => {
+                    if (!obfuscationMap[attr]) {
+                        obfuscationMap[attr] = generateRandomString(5);
+                    }
+                    return obfuscationMap[attr];
+                });
+                return `<${tag}${obfuscatedAttrs}>`;
+            });
+        }
+
         function obfuscateText(code) {
             return code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
                 if (!obfuscationMap[match]) {
@@ -89,6 +94,14 @@
                 }
                 return obfuscationMap[match];
             });
+        }
+
+        function downloadFile(content, fileName) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
         }
 
         function obfuscateCode() {
@@ -102,14 +115,14 @@
             const reader = new FileReader();
             reader.onload = function (e) {
                 const code = e.target.result;
-                obfuscationMap = {};
+                obfuscationMap = {}; // Reset the map
                 let obfuscatedCode = '';
                 if (file.name.endsWith('.lua')) {
-                    obfuscatedCode = obfuscateText(code); // Reusing text obfuscation for Lua
+                    obfuscatedCode = obfuscateLua(code);
                 } else if (file.name.endsWith('.js')) {
-                    obfuscatedCode = obfuscateText(code); // Reusing text obfuscation for JavaScript
+                    obfuscatedCode = obfuscateJavaScript(code);
                 } else if (file.name.endsWith('.html')) {
-                    obfuscatedCode = obfuscateText(code); // Reusing text obfuscation for HTML
+                    obfuscatedCode = obfuscateHTML(code);
                 } else if (file.name.endsWith('.txt')) {
                     obfuscatedCode = obfuscateText(code);
                 } else {
@@ -117,12 +130,32 @@
                     return;
                 }
                 document.getElementById('output').textContent = obfuscatedCode;
+                downloadFile(obfuscatedCode, `${file.name.split('.')[0]}_obfuscated.txt`);
             };
             reader.readAsText(file);
         }
 
         function deobfuscateCode() {
-            // Similar to obfuscateCode but reverses obfuscation
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select a file to deobfuscate.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let code = e.target.result;
+                const reversedMap = Object.fromEntries(
+                    Object.entries(obfuscationMap).map(([key, value]) => [value, key])
+                );
+                for (const [obfuscated, original] of Object.entries(reversedMap)) {
+                    code = code.replace(new RegExp(`\\b${obfuscated}\\b`, 'g'), original);
+                }
+                document.getElementById('deobfuscatedOutput').textContent = code;
+                downloadFile(code, `${file.name.split('.')[0]}_deobfuscated.txt`);
+            };
+            reader.readAsText(file);
         }
     </script>
 </body>
