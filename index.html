@@ -3,22 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Obfuscator</title>
+    <title>Blueshub Obfuscator</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #output { white-space: pre-wrap; margin-top: 15px; }
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e3a5f;
+            color: #ffffff;
+        }
+
+        /* Header */
+        header {
+            background-color: #0d253f;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #4bb3fd;
+        }
+
+        /* Main Content */
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #2a4d75;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        main h2 {
+            color: #4bb3fd;
+            margin-bottom: 15px;
+        }
+
+        main p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        /* Form Area */
+        .form-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-area input[type="file"] {
+            margin-bottom: 15px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4bb3fd;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .form-area button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4bb3fd;
+            color: #ffffff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-area button:hover {
+            background-color: #358ac9;
+        }
+
+        /* Output Area */
+        .output-area {
+            margin-top: 20px;
+        }
+
+        .output-area h3 {
+            color: #4bb3fd;
+        }
+
+        .output-area div {
+            background-color: #1c324e;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            color: #cce7ff;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #0d253f;
+            margin-top: 20px;
+            color: #4bb3fd;
+        }
     </style>
 </head>
 <body>
-    <h1>Code Obfuscator</h1>
-    <p>Select a file to obfuscate (Lua, JavaScript, or HTML):</p>
-    <input type="file" id="fileInput" accept=".lua,.js,.html">
-    <button onclick="obfuscateCode()">Obfuscate</button>
+    <header>
+        <h1>Blueshub Obfuscator</h1>
+    </header>
+    <main>
+        <h2>Welcome to Blueshub Obfuscator</h2>
+        <p>
+            Obfuscate and deobfuscate your Lua, JavaScript, or HTML files with ease. Upload your file below and choose an action.
+        </p>
 
-    <h3>Obfuscated Code:</h3>
-    <div id="output"></div>
+        <div class="form-area">
+            <input type="file" id="fileInput" accept=".lua,.js,.html">
+            <br>
+            <button onclick="obfuscateCode()">Obfuscate</button>
+            <button onclick="deobfuscateCode()">Deobfuscate</button>
+        </div>
+
+        <div class="output-area">
+            <h3>Obfuscated Code:</h3>
+            <div id="output"></div>
+
+            <h3>Deobfuscated Code:</h3>
+            <div id="deobfuscatedOutput"></div>
+        </div>
+    </main>
+    <footer>
+        &copy; 2025 Blueshub Obfuscator. All rights reserved.
+    </footer>
 
     <script>
+        let obfuscationMap = {}; // Track original and obfuscated variable names
+
         function generateRandomString(length) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -29,23 +152,56 @@
         }
 
         function obfuscateLua(code) {
-            return code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, () => generateRandomString(8));
+            return code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
+                if (!obfuscationMap[match]) {
+                    obfuscationMap[match] = generateRandomString(8);
+                }
+                return obfuscationMap[match];
+            });
         }
 
         function obfuscateJavaScript(code) {
             const varRegex = /\b(var|let|const|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g;
             const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
-            const obfuscatedCode = code
-                .replace(varRegex, (match, type, name) => `${type} ${generateRandomString(8)}`)
-                .replace(stringRegex, () => `"${generateRandomString(16)}"`);
-            return obfuscatedCode;
+
+            return code.replace(varRegex, (match, type, name) => {
+                if (!obfuscationMap[name]) {
+                    obfuscationMap[name] = generateRandomString(8);
+                }
+                return `${type} ${obfuscationMap[name]}`;
+            }).replace(stringRegex, () => `"${generateRandomString(16)}"`);
         }
 
         function obfuscateHTML(code) {
             return code.replace(/<([a-zA-Z]+)([^>]*)>/g, (match, tag, attrs) => {
-                const obfuscatedAttrs = attrs.replace(/\b([a-zA-Z-]+)\b/g, generateRandomString(5));
+                const obfuscatedAttrs = attrs.replace(/\b([a-zA-Z-]+)\b/g, (attr) => {
+                    if (!obfuscationMap[attr]) {
+                        obfuscationMap[attr] = generateRandomString(5);
+                    }
+                    return obfuscationMap[attr];
+                });
                 return `<${tag}${obfuscatedAttrs}>`;
             });
+        }
+
+        function deobfuscateCode() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select a file to deobfuscate.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let code = e.target.result;
+                const reversedMap = Object.fromEntries(Object.entries(obfuscationMap).map(([key, value]) => [value, key]));
+                for (const [obfuscated, original] of Object.entries(reversedMap)) {
+                    code = code.replace(new RegExp(`\\b${obfuscated}\\b`, 'g'), original);
+                }
+                document.getElementById('deobfuscatedOutput').textContent = code;
+            };
+            reader.readAsText(file);
         }
 
         function obfuscateCode() {
@@ -60,6 +216,8 @@
             reader.onload = function (e) {
                 const code = e.target.result;
                 let obfuscatedCode = '';
+                obfuscationMap = {}; // Reset the map
+
                 if (file.name.endsWith('.lua')) {
                     obfuscatedCode = obfuscateLua(code);
                 } else if (file.name.endsWith('.js')) {
