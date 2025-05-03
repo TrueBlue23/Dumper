@@ -1,39 +1,30 @@
-function obfuscateText(code) {
-    return code.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, (match) => {
-        if (!obfuscationMap[match]) {
-            obfuscationMap[match] = generateRandomString(8);
-        }
-        return obfuscationMap[match];
-    });
-}
+function deobfuscateCode() {
+    const premiumKey = prompt('Please enter your premium key to proceed:');
+    const validPremiumKey = 'YOUR_PREMIUM_KEY'; // Replace with your actual premium key
 
-function obfuscateCode() {
+    if (premiumKey !== validPremiumKey) {
+        alert('Invalid premium key. Access denied.');
+        return; // Exit the function if the key is invalid
+    }
+
     const fileInput = document.getElementById('fileInput');
     if (!fileInput.files.length) {
-        alert('Please select a file to obfuscate.');
+        alert('Please select a file to deobfuscate.');
         return;
     }
 
     const file = fileInput.files[0];
     const reader = new FileReader();
     reader.onload = function (e) {
-        const code = e.target.result;
-        obfuscationMap = {}; // Reset the map
-        let obfuscatedCode = '';
-        if (file.name.endsWith('.lua')) {
-            obfuscatedCode = obfuscateLua(code);
-        } else if (file.name.endsWith('.js')) {
-            obfuscatedCode = obfuscateJavaScript(code);
-        } else if (file.name.endsWith('.html')) {
-            obfuscatedCode = obfuscateHTML(code);
-        } else if (file.name.endsWith('.txt')) {
-            obfuscatedCode = obfuscateText(code); // New handling for .txt files
-        } else {
-            alert('Unsupported file type. Only Lua, JavaScript, HTML, and TXT are supported.');
-            return;
+        let code = e.target.result;
+        const reversedMap = Object.fromEntries(
+            Object.entries(obfuscationMap).map(([key, value]) => [value, key])
+        );
+        for (const [obfuscated, original] of Object.entries(reversedMap)) {
+            code = code.replace(new RegExp(`\\b${obfuscated}\\b`, 'g'), original);
         }
-        document.getElementById('output').textContent = obfuscatedCode;
-        downloadObfuscatedCode(obfuscatedCode, file.name);
+        document.getElementById('deobfuscatedOutput').textContent = code;
+        downloadFile(code, `${file.name.split('.')[0]}_deobfuscated.txt`);
     };
     reader.readAsText(file);
 }
