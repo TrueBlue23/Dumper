@@ -1,6 +1,37 @@
+let obfuscationMap = {}; // Track original and obfuscated variable names
+
+function generateRandomString(length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return result;
+}
+
+function obfuscateJavaScript(code) {
+    const premiumKey = prompt('Please enter your premium key to proceed:');
+    const validPremiumKey = '201127'; // Replace with your actual premium key
+
+    if (premiumKey !== validPremiumKey) {
+        alert('Invalid premium key. Access denied.');
+        return; // Exit the function if the key is invalid
+    }
+
+    const varRegex = /\b(var|let|const|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)/g;
+    const stringRegex = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+
+    return code.replace(varRegex, (match, type, name) => {
+        if (!obfuscationMap[name]) {
+            obfuscationMap[name] = generateRandomString(8);
+        }
+        return `${type} ${obfuscationMap[name]}`;
+    }).replace(stringRegex, () => `"${generateRandomString(16)}"`);
+}
+
 function deobfuscateCode() {
     const premiumKey = prompt('Please enter your premium key to proceed:');
-    const validPremiumKey = '1022011'; // Replace with your actual premium key
+    const validPremiumKey = 'YOUR_PREMIUM_KEY'; // Replace with your actual premium key
 
     if (premiumKey !== validPremiumKey) {
         alert('Invalid premium key. Access denied.');
@@ -27,4 +58,12 @@ function deobfuscateCode() {
         downloadFile(code, `${file.name.split('.')[0]}_deobfuscated.txt`);
     };
     reader.readAsText(file);
+}
+
+function downloadFile(content, fileName) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
 }
