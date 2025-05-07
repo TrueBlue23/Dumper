@@ -4,24 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dumper Obfuscator</title>
-    <link rel="stylesheet" href="style.css"> <!-- Retain your existing style file -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Dumper Tool</h1>
-        <p>Welcome to the Dumper Obfuscator! Enter your code below to obfuscate it.</p>
+        <h1>BluesHub Obfuscator</h1>
+        <p>Upload your text file, obfuscate it, and download the result!</p>
     </header>
     <main>
         <section class="content">
-            <h2>Code Obfuscator</h2>
-            <textarea id="inputCode" placeholder="Paste your code here..."></textarea>
+            <h2>Upload a File for Obfuscation</h2>
+            <input type="file" id="fileInput" accept=".txt">
             <button id="obfuscateButton">Obfuscate</button>
-            <textarea id="outputCode" placeholder="Your obfuscated code will appear here..." readonly></textarea>
+            <p id="statusMessage"></p>
         </section>
     </main>
     <footer>
         <p>© 2025 TrueBlue23. All rights reserved.</p>
     </footer>
-    <script src="script.js"></script> <!-- Custom obfuscator JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
