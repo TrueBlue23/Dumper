@@ -1,25 +1,25 @@
-/* Body and Main Theme */
+/* General Body and Theme */
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e1e;
-    color: #c1c1c1;
+    background-color: #1e3a5f;
+    color: #c1d9ff;
     margin: 0;
     padding: 0;
 }
 
 header {
-    background-color: #282828;
+    background-color: #2c5f8a;
     padding: 20px;
     text-align: center;
 }
 
 header h1 {
-    color: #61dafb;
+    color: #ffffff;
     font-size: 2.5em;
 }
 
 header p {
-    color: #c1c1c1;
+    color: #d1e7ff;
     font-size: 1.2em;
 }
 
@@ -31,30 +31,29 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background: #333;
+    background: #24476d;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
 }
 
-textarea {
-    width: 100%;
-    height: 150px;
-    background: #222;
-    color: #61dafb;
-    border: 1px solid #444;
-    border-radius: 5px;
+input[type="file"] {
+    display: block;
+    margin: 10px auto;
     padding: 10px;
-    margin-bottom: 10px;
-    font-family: monospace;
-    font-size: 1em;
+    background: #3f6d99;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 button {
     display: block;
-    width: 100%;
-    padding: 10px;
-    background: #61dafb;
-    color: #1e1e1e;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background: #5fa3dc;
+    color: #ffffff;
     font-size: 1.2em;
     border: none;
     border-radius: 5px;
@@ -63,12 +62,18 @@ button {
 }
 
 button:hover {
-    background: #4ea8d7;
+    background: #4d8ac3;
+}
+
+#statusMessage {
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #d1e7ff;
 }
 
 footer {
     text-align: center;
     padding: 10px;
-    background-color: #282828;
-    color: #c1c1c1;
+    background-color: #2c5f8a;
+    color: #d1e7ff;
 }
