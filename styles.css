@@ -71,6 +71,19 @@ button:hover {
     color: #d1e7ff;
 }
 
+.code-block {
+    background-color: #1e3a5f;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    overflow-x: auto;
+    max-height: 200px;
+    margin: 20px 0;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
 footer {
     text-align: center;
     padding: 10px;
