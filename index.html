@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dumper Obfuscator</title>
+    <title>Lua Obfuscator</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Dumper Obfuscator</h1>
-        <p>Upload your text file, obfuscate it, and download the result!</p>
+        <h1>Lua Obfuscator</h1>
+        <p>Upload your Lua script, obfuscate it, preview the result, and download the obfuscated file!</p>
     </header>
     <main>
         <section class="content">
-            <h2>Upload a File for Obfuscation</h2>
+            <h2>Upload a Lua File for Obfuscation</h2>
             <input type="file" id="fileInput" accept=".txt">
             <button id="obfuscateButton">Obfuscate</button>
             <p id="statusMessage"></p>
+            <h3>Obfuscated Code Preview</h3>
+            <pre id="codePreview" class="code-block"></pre>
         </section>
     </main>
     <footer>
