@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BluesHub Obfuscator</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lua Obfuscator</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Welcome to BluesHub Obfuscator</h1>
-  </header>
-  <main>
-    <textarea id="input-code" placeholder="Enter your code here"></textarea>
-    <button id="obfuscate">Obfuscate</button>
-    <div id="output-section">
-      <h2>Obfuscated Code</h2>
-      <textarea id="output-code" readonly></textarea>
-    </div>
-  </main>
-  <script src="script.js"></script>
+    <header>
+        <h1>Lua Obfuscator</h1>
+        <p>Upload your Lua script, obfuscate it, preview the result, and download the obfuscated file!</p>
+    </header>
+    <main>
+        <section class="content">
+            <h2>Upload a Lua File for Obfuscation</h2>
+            <input type="file" id="fileInput" accept=".lua">
+            <button id="obfuscateButton">Obfuscate</button>
+            <p id="statusMessage"></p>
+            <h3>Obfuscated Code Preview</h3>
+            <pre id="codePreview" class="code-block"></pre>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 TrueBlue23. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
