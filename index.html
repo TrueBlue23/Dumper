@@ -3,34 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BluesHub Obfuscator</title>
+  <title>BluesHub OBF</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
-    <h1>Welcome to BluesHub Obfuscator</h1>
+    <h1>Welcome to BluesHub OBF</h1>
   </header>
   <main>
     <textarea id="input-code" placeholder="Enter your code here"></textarea>
-    <button id="obfuscate">Obfuscate</button>
+    <button id="process">Process Code</button>
     <div id="output-section">
-      <h2>Obfuscated Code</h2>
+      <h2>Processed Code</h2>
       <textarea id="output-code" readonly></textarea>
     </div>
   </main>
-  <script>
-    document.getElementById('obfuscate').addEventListener('click', function() {
-      const inputCode = document.getElementById('input-code').value;
-      
-      // Simple obfuscation logic (replace with actual obfuscation logic)
-      let obfuscatedCode = inputCode.split('').reverse().join('');
-      
-      // Append signature
-      obfuscatedCode += "\n--obfuscated by blueshub";
-      
-      // Display obfuscated code
-      document.getElementById('output-code').value = obfuscatedCode;
-    });
-  </script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
