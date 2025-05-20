@@ -57,7 +57,7 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
         const blob = new Blob([obfuscatedCode], { type: "text/plain" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "obfuscated.lua";
+        link.download = "obfuscated.txt";
         link.click();
 
         statusMessage.textContent = "Obfuscation complete! File downloaded.";
