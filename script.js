@@ -40,7 +40,7 @@ function generateRandomVariable(length = 8) {
 document.getElementById("obfuscateButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
     const statusMessage = document.getElementById("statusMessage");
-    const codePreview = document.getElementById("codePreview");
+  
 
     if (!fileInput.files.length) {
         statusMessage.textContent = "Please upload a Lua (.lua) file to obfuscate.";
