@@ -1,3 +1,7 @@
+// Example pattern in your script.js
+const obfuscatedContent = '-- Obfuscated By BluesHub\n' + yourObfuscationFunction(originalContent);
+// ...rest of your code for downloading the file
+
 // Lua Obfuscator Script
 function obfuscateLuaCode(inputCode) {
     const lines = inputCode.split("\n");
