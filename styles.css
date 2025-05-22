@@ -1,30 +1,104 @@
-/* Blue Theme */
+/* Reset some browser defaults */
+body, h1, div, input, button {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Background and container */
 body {
-  background-color: #f0f8ff; /* Light blue background */
-  color: #003366; /* Dark blue text */
-  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #2d3e50 0%, #4a90e2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #f4f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Obfuscate Button Styling */
-button#obfuscate {
-  background: linear-gradient(90deg, #0073e6, #005bb5);
-  color: white;
+/* Main container */
+.container {
+  background: rgba(34, 49, 63, 0.94);
+  border-radius: 16px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.23);
+  padding: 2rem 2.5rem;
+  max-width: 380px;
+  width: 100%;
+  margin: 1.5rem;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+header h1 {
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+input[type="file"] {
+  background: #2d3e50;
+  color: #f4f7fa;
+  border: 1px solid #4a90e2;
+  border-radius: 5px;
+  padding: 0.6em 0.8em;
+  font-size: 1rem;
+  width: 100%;
+  transition: border 0.2s;
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: #1e6ae6;
+}
+
+/* Button styling */
+button {
+  background: #4a90e2;
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 5px;
+  padding: 0.7em 0;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: background 0.2s;
+}
+button:hover, button:focus {
+  background: #1e6ae6;
 }
 
-button#obfuscate:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+/* Status message */
+#statusMessage {
+  min-height: 1.5em;
+  text-align: center;
+  font-size: 1rem;
+  color: #f8e71c;
+  word-break: break-word;
 }
 
-/* Hide Code Preview Section */
-#code-preview {
-  display: none;
+/* Responsive Design */
+@media (max-width: 500px) {
+  .container {
+    padding: 1.2rem 0.6rem;
+    max-width: 98vw;
+  }
+  header h1 {
+    font-size: 1.1rem;
+  }
+  button, input[type="file"] {
+    font-size: 1rem;
+  }
 }
