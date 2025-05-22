@@ -1,23 +1,36 @@
-// Example pattern in your script.js
-// const obfuscatedContent = '-- Obfuscated By BluesHub\n' + yourObfuscationFunction(originalContent);
-// ...rest of your code for downloading the file
+// Unicode-safe Base64 encoding
+function b64EncodeUnicode(str) {
+    return btoa(
+        encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        })
+    );
+}
 
 // Lua Obfuscator Script
 function obfuscateLuaCode(inputCode) {
+    if (typeof inputCode !== "string") {
+        throw new TypeError("Input code must be a string.");
+    }
+
     const lines = inputCode.split("\n");
     let randomVariables = [];
     let obfuscatedCode = "";
 
     // Generate random variable names and encode each line
-    lines.forEach((line) => {
-        const randomVar = generateRandomVariable();
-        randomVariables.push(randomVar);
+    lines.forEach((line, idx) => {
+        try {
+            const randomVar = generateRandomVariable();
+            randomVariables.push(randomVar);
 
-        // Add unnecessary logic to make the code confusing
-        obfuscatedCode += `${randomVar} = "${b64EncodeUnicode(line.trim())}"; `; // Encode line with Base64 (Unicode-safe)
-        obfuscatedCode += `if ${randomVar} ~= nil then `; // Add confusion
-        obfuscatedCode += `table.insert({}, ${randomVar} .. "dummy"); `; // Dummy operation
-        obfuscatedCode += `end; `;
+            // Add unnecessary logic to make the code confusing
+            obfuscatedCode += `${randomVar} = "${b64EncodeUnicode(line.trim())}"; `;
+            obfuscatedCode += `if ${randomVar} ~= nil then `;
+            obfuscatedCode += `table.insert({}, ${randomVar} .. "dummy"); `;
+            obfuscatedCode += `end; `;
+        } catch (err) {
+            console.error(`Error obfuscating line ${idx + 1}:`, err);
+        }
     });
 
     // Combine lines into a single eval structure
@@ -25,7 +38,8 @@ function obfuscateLuaCode(inputCode) {
     obfuscatedCode += randomVariables.map((varName) => `string.reverse(string.reverse(${varName}))`).join(", ");
     obfuscatedCode += "}))();";
 
-    return obfuscatedCode;
+    // Add the custom message at the first line
+    return "-- Made by TrueBlue\n" + obfuscatedCode;
 }
 
 function generateRandomVariable(length = 8) {
@@ -40,7 +54,10 @@ function generateRandomVariable(length = 8) {
 document.getElementById("obfuscateButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
     const statusMessage = document.getElementById("statusMessage");
-  
+    const codePreview = document.getElementById("codePreview");
+
+    statusMessage.textContent = "";
+    codePreview.textContent = "";
 
     if (!fileInput.files.length) {
         statusMessage.textContent = "Please upload a Lua (.lua) file to obfuscate.";
@@ -48,23 +65,33 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
     }
 
     const file = fileInput.files[0];
+    if (!file.name.endsWith('.lua')) {
+        statusMessage.textContent = "Invalid file type. Please upload a .lua file.";
+        return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = function (event) {
-        const inputCode = event.target.result;
-        const obfuscatedCode = obfuscateLuaCode(inputCode);
+        try {
+            const inputCode = event.target.result;
+            const obfuscatedCode = obfuscateLuaCode(inputCode);
 
-        // Display the obfuscated code in the preview block
-        codePreview.textContent = obfuscatedCode;
+            // Display the obfuscated code in the preview block
+            codePreview.textContent = obfuscatedCode;
 
-        // Create a blob and trigger download
-        const blob = new Blob([obfuscatedCode], { type: "text/plain" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "obfuscated.txt";
-        link.click();
+            // Create a blob and trigger download
+            const blob = new Blob([obfuscatedCode], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "obfuscated.txt";
+            link.click();
 
-        statusMessage.textContent = "Obfuscation complete! File downloaded.";
+            statusMessage.textContent = "Obfuscation complete! File downloaded.";
+        } catch (err) {
+            console.error("Obfuscation error:", err);
+            statusMessage.textContent = "Error during obfuscation: " + err.message;
+        }
     };
 
     reader.onerror = function () {
