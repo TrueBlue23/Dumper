@@ -14,7 +14,7 @@ function obfuscateLuaCode(inputCode) {
         randomVariables.push(randomVar);
 
         // Add unnecessary logic to make the code confusing
-        obfuscatedCode += `${randomVar} = "${btoa(unescape(encodeURIComponent(line.trim())))}"; `; // Encode line with Base64
+        obfuscatedCode += `${randomVar} = "${b64EncodeUnicode(line.trim())}"; `; // Encode line with Base64 (Unicode-safe)
         obfuscatedCode += `if ${randomVar} ~= nil then `; // Add confusion
         obfuscatedCode += `table.insert({}, ${randomVar} .. "dummy"); `; // Dummy operation
         obfuscatedCode += `end; `;
