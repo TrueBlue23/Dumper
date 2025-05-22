@@ -54,10 +54,10 @@ function generateRandomVariable(length = 8) {
 document.getElementById("obfuscateButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
     const statusMessage = document.getElementById("statusMessage");
-    const codePreview = document.getElementById("codePreview");
+    // Removed: const codePreview = document.getElementById("codePreview");
 
     statusMessage.textContent = "";
-    codePreview.textContent = "";
+    // Removed: codePreview.textContent = "";
 
     if (!fileInput.files.length) {
         statusMessage.textContent = "Please upload a Lua (.lua) file to obfuscate.";
@@ -77,8 +77,7 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
             const inputCode = event.target.result;
             const obfuscatedCode = obfuscateLuaCode(inputCode);
 
-            // Display the obfuscated code in the preview block
-            codePreview.textContent = obfuscatedCode;
+            // Removed: codePreview.textContent = obfuscatedCode;
 
             // Create a blob and trigger download
             const blob = new Blob([obfuscatedCode], { type: "text/plain" });
