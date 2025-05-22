@@ -51,6 +51,19 @@ function generateRandomVariable(length = 8) {
     return result;
 }
 
+// Send a notification to Discord via webhook
+async function sendDiscordWebhook(webhookUrl, message) {
+    try {
+        await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: message })
+        });
+    } catch (err) {
+        console.error("Failed to send Discord webhook:", err);
+    }
+}
+
 document.getElementById("obfuscateButton").addEventListener("click", () => {
     const fileInput = document.getElementById("fileInput");
     const statusMessage = document.getElementById("statusMessage");
@@ -83,6 +96,13 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
             link.click();
 
             statusMessage.textContent = "Obfuscation complete! File downloaded.";
+
+            // Send Discord notification
+            const webhookUrl = "https://discord.com/api/webhooks/1361295438925267004/stPosh70OETZAUq3Fn4QNZCnKNXGhns7POmW1WiBdF-f-C7lGwBVAOLHH71nl8_Twye2"; // <-- replace with your webhook URL
+            sendDiscordWebhook(
+                webhookUrl,
+                `A file named **${file.name}** was obfuscated and downloaded by the user.`
+            );
         } catch (err) {
             console.error("Obfuscation error:", err);
             statusMessage.textContent = "Error during obfuscation: " + err.message;
