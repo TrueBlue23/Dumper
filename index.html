@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +12,12 @@
     <h1>Welcome to BluesHub OBF</h1>
   </header>
   <main>
-    <textarea id="input-code" placeholder="Enter your code here"></textarea>
-    <button id="obfuscate">Obfuscate</button>
-    <div id="output-section">
-      <h2>Obfuscated Code</h2>
-      <textarea id="output-code" readonly></textarea>
-    </div>
+    <input type="file" id="fileInput" accept=".lua, .txt" />
+    <button id="obfuscateButton">Obfuscate</button>
+    <div id="statusMessage"></div>
+    <pre id="codePreview"></pre>
   </main>
   <script src="script.js"></script>
 </body>
 </html>
+```
