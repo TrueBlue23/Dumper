@@ -81,7 +81,7 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
     }
 
     const file = fileInput.files[0];
-    if (!file.name.endsWith('.lua')) {
+    if (!file.name.endsWith('.lua,.txt')) {
         statusMessage.textContent = "Invalid file type. Please upload a .lua file.";
         return;
     }
